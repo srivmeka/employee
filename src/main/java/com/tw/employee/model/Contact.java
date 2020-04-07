@@ -1,6 +1,10 @@
 package com.tw.employee.model;
 
+import lombok.Data;
+
+@Data
 public class Contact {
-    private String email;
+    private int id;
+    private String emailId;
     private long phoneNumber;
 }

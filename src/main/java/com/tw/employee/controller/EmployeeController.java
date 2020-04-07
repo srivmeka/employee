@@ -4,26 +4,24 @@ import com.tw.employee.model.Employee;
 import com.tw.employee.model.Recommendation;
 import com.tw.employee.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
+
+@RequestMapping(value = "/employee") // Global request mapping how it helps //http://localhost:8080/employee/
 @RestController
-@RequestMapping(value = "/employee") // Global request mapping how it helps
 public class EmployeeController {
 
     @Autowired
     EmployeeService employeeService;
 
-    //Creates a new POST/Employee resource: http://localhost:8080/employee
+    //Creates a new POST/Employee resource: http://localhost:8080/employee/
     @PostMapping("")
     public Employee createEmployee(@RequestBody Employee employee) {
-        return null;
+        return employeeService.createEmployee(employee);
     }
 
     //Get All Employees: http://localhost:8080/employee
@@ -54,7 +52,7 @@ public class EmployeeController {
     //Post specific Employee recommendations: http://lcoalhost:8080/emploee/id2/recommendations
     @ResponseStatus(HttpStatus.CREATED) // talk about what is response status and how it is Used.
     @PostMapping("/{id}/recommendations")
-    public void createEmployeeRecommendations(@PathVariable String id, @RequestBody Recommendation recommendation) {
+    public void createEmployeeRecommendations(@PathVariable @NotNull String id, @RequestBody Recommendation recommendation) {
 
     }
 
@@ -65,21 +63,22 @@ public class EmployeeController {
     }
 
     //perform validation using java bean validation API
-    @ResponseStatus(HttpStatus.CREATED)
+    /*@ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    public Employee createEmployee(@RequestBody @Valid Employee employee, BindingResult result) {
+    public APIResponse createEmployee(@RequestBody @Valid Employee employee, BindingResult result) {
         if (result.hasErrors()) {
             //TODO - handle errors;
+
         }
         return employeeService.createEmployee(employee);
-    }
+    }*/
 
     // Using ResponseEntity for control on responses
-    public ResponseEntity<Employee> createEmployeeRE(@RequestBody @Valid Employee employee, BindingResult result) {
+    /*public ResponseEntity<Employee> createEmployeeRE(@RequestBody @Valid Employee employee, BindingResult result) {
         Employee createdEmp = createEmployee(employee, result);
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("userRespHeader1","value1");
         responseHeaders.set("userRespHeader2","value2");
         return new ResponseEntity<>(createdEmp, responseHeaders, HttpStatus.CREATED);
-    }
+    }*/
 }
