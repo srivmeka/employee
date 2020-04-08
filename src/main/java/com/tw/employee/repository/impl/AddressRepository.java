@@ -1,4 +1,4 @@
-package com.tw.employee.repository;
+package com.tw.employee.repository.impl;
 
 import com.tw.employee.model.Address;
 import org.springframework.stereotype.Repository;

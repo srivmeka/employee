@@ -1,11 +1,14 @@
 package com.tw.employee.service;
 
+import com.tw.employee.dto.EmployeePage;
 import com.tw.employee.model.Employee;
-import com.tw.employee.repository.AddressRepository;
-import com.tw.employee.repository.ContactRepository;
-import com.tw.employee.repository.EmployeeRepository;
+import com.tw.employee.repository.EmployeeJPARepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,37 +17,42 @@ import java.util.List;
 public class EmployeeService {
 
     @Autowired
-    @Qualifier("employeeJDBCRepository")
-    EmployeeRepository employeeRepository;
-
-    @Autowired
-    ContactRepository contactRepository;
-
-    @Autowired
-    AddressRepository addressRepository;
+    EmployeeJPARepository employeeRepositoryImpl;
 
     /*@Autowired
     EmployeeDummyRepository employeeRepository;
      */
 
     public List<Employee> listEmployees() {
-        List<Employee> employees = employeeRepository.findAll();
-        // any transformations if needed
+        List<Employee> employees = employeeRepositoryImpl.findAll();
         return employees;
     }
 
+    // TODO Pagination and Sorting support
+    public List<Employee> listEmployeesSortById() {
+        Sort sort =  Sort.by(Direction.ASC,"employeeId");
+        List<Employee> employees = employeeRepositoryImpl.findAll(sort);
+        return employees;
+    }
+
+    public List<Employee> listEmployeesSortByIdAndName() {
+        Sort.Order order1 = new Sort.Order(Direction.ASC, "employeeId");
+        Sort.Order order2 = new Sort.Order(Direction.ASC, "firstName");
+        List<Employee> employees = employeeRepositoryImpl.findAll(Sort.by(order1, order2));
+        return employees;
+    }
+
+    public EmployeePage listPageEmployees(int pageSize, int page) { // Should return PaginationDTO populating all page related stuff along with
+        Sort sort =  Sort.by(Direction.ASC,"employeeId");
+        Pageable pageable = PageRequest.of(page, pageSize, sort);
+        Page<Employee> employeePage = employeeRepositoryImpl.findAll(pageable);
+        EmployeePage empPage = new EmployeePage();
+        empPage.setPageContent(employeePage.getContent()); //TODO get other detail from pageable reference and return;
+        return empPage;
+    }
+
+
     public Employee createEmployee(Employee employee) {
-        // Create Address - Get AddressId
-        int contactId = contactRepository.create(employee.getContact());
-        employee.getContact().setId(contactId);
-
-        int addressId = addressRepository.create(employee.getAddress());
-        employee.getAddress().setId(addressId);
-
-        // TODO Logic to generate Employee_id  - Business Logic
-        employee.setEmployeeId("TWBLRMDP-02"); // TODO remove hardcoding
-        int employeeId =  employeeRepository.create(employee);
-
-        return employee;
+        return employeeRepositoryImpl.save(employee);
     }
 }

@@ -1,14 +1,24 @@
 package com.tw.employee.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Data
+@JsonIgnoreProperties({"employee"}) // this can break the infinite recursion when applied on BACk reference java beans.
+//// Can also be done using @JsonManagedReference, @JsonBackReference
 public class Recommendation {
-    private String employeeId;
+    /*@JsonBackReference
+    @ManyToOne(optional = false)
+    @JoinColumn(name="employee_id")
+    private Employee employee;*/
 
     @FutureOrPresent
     private Date recommendedOn;
@@ -17,4 +27,6 @@ public class Recommendation {
     private String content;
 
     private Contact fromContact; // Recommended person
+
+
 }
